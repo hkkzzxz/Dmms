@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liu.dao.User.UserMapper">
+    <select id="getLoginUser" parameterType="map" resultType="com.liu.pojo.User">
+    select * from dmbms_user where userCode=#{userCode} and userPassword=#{userPassword};
+    </select>
+<update id="updatePwd" parameterType="map">
+    update smbms_user set userPassword=#{userPassword} where id=#{id};
+</update>
+    <select id="getUserCount" resultType="java.lang.Integer">
+        select count(1)AS count from dmbms_user su,dmbms_role sr where su.userRole=sr.id
+    <if test="userName">
+        and userName like "%"#{userName}"%"
+    </if>
+<if test="id">
+    and sr.id=#{id}
+</if>
+    </select>
+    <select id="getUserList" resultType="com.liu.pojo.User">
+        select u.id,u.userCode,u.userName,u.userPassword,u.gender,u.birthday,u.phone,u.address,u.userRole,u.createdBy,u.creationDate,u.modifyBy,u.modifyDate,r.roleName as userRoleName from dmbms_user u,dmbms_role r where u.userRole=r.id
+<if test="userName!=null">
+    and userName like "%"#{userName}"%"
+</if>
+<if test="userRole!=0">
+    and u.userRole=#{userRole}
+</if>
+<if test="orde">
+    ORDER by u.creationDate DESC
+</if>
+        <if test="orde">
+    LIMIT #{userStart},#{pageSize}
+</if>
+    </select>
+    <resultMap id="UserRole" type="User">
+        <result property="id" column="id"/>
+        <result property="userCode" column="userCode"/>
+        <result property="userName" column="userName"/>
+        <result property="userPassword" column="userPassword"/>
+        <result property="gender" column="gender"/>
+        <result property="birthday" column="birthday"/>
+        <result property="phone" column="phone"/>
+        <result property="address" column="address"/>
+        <result property="userRole" column="userRole"/>
+        <result property="createdBy" column="createdBy"/>
+        <result property="creationDate" column="creationDate"/>
+        <result property="modifyBy" column="modifyBy"/>
+        <result property="modifyDate" column="modifyDate"/>
+        <result property="roleName" column="roleName"/>
+        <association property="roles" javaType="Role">
+            <result property="roleName" column="roleName"/>
+        </association>
+    </resultMap>
+    <delete id="delUser" parameterType="map">
+        delete from dmbms_user where id=#{id}
+    </delete>
+    <select id="selectUserCodeExist" resultType="com.liu.pojo.User">
+        select * from dmbms_user where userCode=#{userCode}
+    </select>
+    <insert id="addUser" parameterType="map">
+        insert into dmbms_user (userCode,userName,userPassword,gender,birthday,phone,address,userRole,createdBy,creationDate) values(#{userCode},#{userName},#{userPassword},#{gender},#{birthday},#{phone},#{address},#{userRole},#{createdBy},#{creationDate});
+    </insert>
+    <select id="selectUserById" resultType="com.liu.pojo.User">
+        select u.id,u.userCode,u.userName,u.userPassword,u.gender,u.birthday,u.phone,u.address,u.userRole,u.createdBy,u.creationDate,r.roleName as userRoleName from dmbms_user u,dmbms_role r where u.userRole=r.id and u.id=#{uid}
+    </select>
+<update id="updateUser" parameterType="map">
+    update dmbms_user
+    <trim prefix="set" suffixOverrides=",">
+        <if test="userName">userName=#{userName},</if>
+    <if test="gender">gender=#{gender},</if>
+    <if test="birthday">birthday=#{birthday},</if>
+<if test="phone">phone=#{phone},</if>
+<if test="address">address=#{address},</if>
+<if test="userRole">userRole=#{userRole},</if>
+<if test="modifyBy">modifyBy=#{modifyBy},</if>
+<if test="modifyDate">modifyDate=#{modifyDate}</if>
+</trim>
+where id=#{uid}
+</update>
+</mapper>

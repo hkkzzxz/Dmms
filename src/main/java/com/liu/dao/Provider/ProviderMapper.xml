@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE mapper
+                PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liu.dao.Provider.ProviderMapper">
+<select id="getProviderList" resultType="com.liu.pojo.Provider">
+        select * from dmbms_provider where 1=1
+<if test="proName">
+and proName like "%"#{proName}"%"
+</if>
+<if test="proCode">
+and proCode like "%"#{proCode}"%"
+</if>
+</select>
+        <delete id="delProByid" parameterType="map">
+                delete from dmbms_provider where id=#{pid}
+        </delete>
+    <update id="updateProByid" parameterType="map">
+        update smbms_provider
+        <trim prefix="set" suffixOverrides=",">
+            <if test="proPhone">proPhone=#{proPhone},</if>
+            <if test="proAddress">proAddress=#{proAddress},</if>
+            <if test="proContact">proContact=#{proContact},</if>
+            <if test="proDesc">proDesc=#{proDesc},</if>
+            <if test="proFax">proFax=#{proFax},</if>
+            <if test="modifyDate">modifyDate=#{modifyDate},</if>
+            <if test="proFax">modifyBy=#{modifyBy}</if>
+        </trim>
+        where id=#{pid}
+    </update>
+    <select id="getProviderByid" resultType="com.liu.pojo.Provider">
+        select * from dmbms_provider where id=#{pid}
+    </select>
+    <insert id="addPro" parameterType="map">
+        insert into dmbms_provider (proCode,proName,proDesc,proContact,proPhone,proAddress,proFax,createdBy,creationDate) values(#{proCode},#{proName},#{proDesc},#{proContact},#{proPhone},#{proAddress},#{proFax},#{createdBy},#{creationDate})
+    </insert>
+</mapper>
